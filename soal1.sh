@@ -1,134 +1,63 @@
 #!/bin/bash
 
 awk -F "\t" '
-BEGIN {n=9999999.0; idx=0}
-{reg=$13;
-if(reg != "Region")
-{
-	k=0
-	for(key in regs)
+BEGIN {}
+{	reg=$13;
+	if(reg != "Region")
 	{
-		if(regs[k] == reg)
-		{
-			profits[k]=profits[k]+$21+0
-			reg="sudah"
-			break
-		}
-		k=k+1;
+		profits[reg]=profits[reg]+$21+0
 	}
-	if(reg!="sudah")
-	{
-		profits[k]=$21+0
-		regs[k]=reg
-	}
-}
 }
 END {
-for(i=0;4>i;i++)
-{
-	if(profits[i] < n)
+	print "Region dengan profit terkecil:"
+	for(key in profits) 
+		keysBackup[profits[key]]=key
+	n = asort(profits, sortedProfits)
+	for(i=1; 2>i; i++)
 	{
-		n = profits[i]
-		idx = i
-	}
-};print "Region dengan profit terkecil: ";print regs[idx],n,"\n"}' Sample-Superstore.tsv
-
+		print keysBackup[sortedProfits[i]], sortedProfits[i]
+	};
+	print "\n"
+}' Sample-Superstore.tsv
 
 
 awk -F "\t" '
-BEGIN {n=9999999.0; idx=0; split("",states)}
+BEGIN {}
 {reg=$13; stateTemp=$11;
 	if(reg=="Central")
 	{
-		k=0
-		for(key in states)
-		{
-			if(states[k] == stateTemp)
-			{
-				profits[k]=profits[k]+$21+0
-				stateTemp="sudah"
-				break
-			}
-			k=k+1;
-		}
-		if(stateTemp!="sudah")
-		{
-			profits[k]=$21+0
-			states[k]=stateTemp
-		}
+		profits[stateTemp] = profits[stateTemp] +$21 +0
 	}
 }
-END {l=0
-n=length(profits)
-
-for(i=1; n>i; i++)
-{
-	profitkey = profits[i]
-	statekey = states[i]
-	for(y=i-1; y>=0; y=y-1)
+END {
+	for(key in profits) 
+		backupKeys[profits[key]]=key
+	n=asort(profits, sortedProfits)
+	print "2 State yang memiliki profit paling kecil: "
+	for(i=1; 3>i; i++)
 	{
-		if(profitkey > profits[y])
-		{
-			break
-		}
-		profits[y+1] = profits[y]
-		states[y+1]=states[y]
+		print backupKeys[sortedProfits[i]], sortedProfits[i]
 	}
-	profits[y+1] = profitkey
-	states[y+1] = statekey
-}
-print "2 State yang memiliki profit paling kecil: "
-print states[0],profits[0]
-print states[1],profits[1],"\n"
+	print "\n"
 }' Sample-Superstore.tsv
 
 awk -F "\t" '
-BEGIN {n=9999999.0; idx=0; split("",products)}
+BEGIN {}
 {reg=$13;productTemp=$17; stateTemp=$11;
 	if(reg=="Central" && (stateTemp=="Texas" || stateTemp=="Illinois"))
 	{
-		k=0
-		for(key in products)
-		{
-			if(products[k] == productTemp)
-			{
-				profits[k]=profits[k]+$21+0
-				productTemp="sudah"
-				break
-			}
-			k=k+1;
-		}
-		if(productTemp!="sudah")
-		{
-			profits[k]=$21+0
-			products[k]=productTemp
-		}
+		profits[productTemp]=profits[productTemp]+$21+0
 	}
 }
-END {l=0
-n=length(profits)
-
-for(i=1; n>i; i++)
-{
-	profitkey = profits[i]
-	productkey = products[i]
-	for(y=i-1; y>=0; y=y-1)
+END {
+	for(key in profits)
+		keysBackup[profits[key]]=key
+	asort(profits, sortedProfits)
+	print "10 Barang yang memiliki profit paling kecil:"	
+	for(p=1; 11>p; p++)
 	{
-		if(profitkey > profits[y])
-		{
-			break
-		}
-		profits[y+1] = profits[y]
-		products[y+1] = products[y]
+		print keysBackup[sortedProfits[p]], sortedProfits[p]
 	}
-	profits[y+1] = profitkey
-	products[y+1] = productkey
-}
-print "10 Barang yang memiliki profit paling kecil:"
-for(p=0; 10>p; p++)
-{
-	print products[p],profits[p]
-}
-print "\n"
+	print "\n"
 
 }' Sample-Superstore.tsv
