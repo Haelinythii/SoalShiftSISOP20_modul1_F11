@@ -3,36 +3,35 @@
 awk -F "\t" '
 BEGIN {n=9999999.0; idx=0}
 {reg=$13;
-	if(reg=="Central")
+if(reg != "Region")
+{
+	k=0
+	for(key in regs)
 	{
-		val[0]=val[0]+$21+0
-		name[0]=reg
+		if(regs[k] == reg)
+		{
+			profits[k]=profits[k]+$21+0
+			reg="sudah"
+			break
+		}
+		k=k+1;
 	}
-	else if(reg=="South")
+	if(reg!="sudah")
 	{
-		val[1]=val[1]+$21+0
-		name[1]=reg
+		profits[k]=$21+0
+		regs[k]=reg
 	}
-	else if(reg=="West")
-	{
-		val[2]=val[2]+$21+0
-		name[2]=reg
-	}
-	else if(reg=="East")
-	{
-		val[3]=val[3]+$21+0
-		name[3]=reg
-	}
+}
 }
 END {
 for(i=0;4>i;i++)
 {
-	if(val[i] < n)
+	if(profits[i] < n)
 	{
-		n = val[i]
+		n = profits[i]
 		idx = i
 	}
-};print "Region dengan profit terkecil: ";print name[idx],n,"\n"}' Sample-Superstore.tsv
+};print "Region dengan profit terkecil: ";print regs[idx],n,"\n"}' Sample-Superstore.tsv
 
 
 
@@ -62,24 +61,21 @@ BEGIN {n=9999999.0; idx=0; split("",states)}
 END {l=0
 n=length(profits)
 
-for(i=0; n-1>i; i++)
+for(i=1; n>i; i++)
 {
-	minidx=i
-	for(j=i+1; n > j; j++)
+	profitkey = profits[i]
+	statekey = states[i]
+	for(y=i-1; y>=0; y=y-1)
 	{
-		if(profits[j]<profits[minidx])
+		if(profitkey > profits[y])
 		{
-			minidx=j
+			break
 		}
-	} 
-	
-	temp=profits[i]
-	profits[i] = profits[minidx]
-	profits[minidx]=temp
-
-	temp=states[i]
-	states[i]=states[minidx]
-	states[minidx]=temp
+		profits[y+1] = profits[y]
+		states[y+1]=states[y]
+	}
+	profits[y+1] = profitkey
+	states[y+1] = statekey
 }
 print "2 State yang memiliki profit paling kecil: "
 print states[0],profits[0]
@@ -112,24 +108,21 @@ BEGIN {n=9999999.0; idx=0; split("",products)}
 END {l=0
 n=length(profits)
 
-for(i=0; n-1>i; i++)
+for(i=1; n>i; i++)
 {
-	minidx=i
-	for(j=i+1; n > j; j++)
+	profitkey = profits[i]
+	productkey = products[i]
+	for(y=i-1; y>=0; y=y-1)
 	{
-		if(profits[j]<profits[minidx])
+		if(profitkey > profits[y])
 		{
-			minidx=j
+			break
 		}
-	} 
-	
-	temp=profits[i]
-	profits[i] = profits[minidx]
-	profits[minidx]=temp
-
-	temp=products[i]
-	products[i]=products[minidx]
-	products[minidx]=temp
+		profits[y+1] = profits[y]
+		products[y+1] = products[y]
+	}
+	profits[y+1] = profitkey
+	products[y+1] = productkey
 }
 print "10 Barang yang memiliki profit paling kecil:"
 for(p=0; 10>p; p++)
