@@ -180,3 +180,134 @@ str="${str}.txt"
 Jam digunakan sebagai acuan enkripsi nama file sesuai enkripsi Caesar Cipher.
 Misal jam 3, dibaga sebagai string "03". Karakter "a" berubah jadi "d", karakter "b" berubah jadi "e", dst.
 Ekstensi dikeluarkan dari enkripsi. Ekstensi dikembalikan ketika proses enkripsi telah selesai
+
+
+
+### a. membuat script untuk mendownload 28 gambar dari "https://loremflickr.com/320/240/cat" menggunakan command wget dan menyimpan file dengan nama "pdkt_kusuma_NO" serta menyimpan log messages wget kedalam sebuah file "wget.log".
+#### Penyelesaian:
+
+```bash
+i=1
+name1="pdkt_kusuma_"
+
+while [ $i -lt 29 ]
+do
+	str1="$name1$i"
+	DL="https://loremflickr.com/320/240/cat"
+
+	wget -O $str1 $DL -a "wget.log"
+	i=$((i + 1))
+done
+```
+#### Penjelasan
+
+28 file didownload dari link "https://loremflickr.com/320/240/cat" dan disimpan dengan nama "pdkt_kusuma_NO". Log message dari wget disimpan pada wget.log.
+
+
+
+
+
+### b. Password acak tersebut disimpan pada file berekstensi .txt dengan nama berdasarkan argumen yang diinputkan dan HANYA berupa alphabet.
+
+```cron
+5 6-23/8 * * 0-5 /home/noradier/modul1/soal3/soal3.sh
+```
+#### Penyelesaian:
+Penulisan perintah untuk menjalankan file bash di crontab (sesuai ketentuan)
+* `5 6-23/8 * * 0-5 /home/noradier/modul1/soal3/soal3.sh` penulisan crontab untuk setiap 8 jam dimulai dari jam 6.05 setiap hari kecuali hari Sabtu dan menjalankan file yang ada di /home/noradier/modul1/soal3/soal3.sh
+
+
+### c. Kemudian supaya file .txt tersebut tidak mudah diketahui maka nama filenya akan di enkripsi dengan menggunakan konversi huruf (string manipulation)
+
+```bash
+folderName="duplicate"
+if [ ! -d "$folderName" ]
+then
+	mkdir "$folderName"
+fi
+
+name1="pdkt_kusuma_"
+name2="duplicate_"
+
+grep 'Location' "wget.log" >> "location.log"
+i=1
+
+while [ $i -lt 29 ]
+do
+	str1="$name1$i"
+	cek1=$(cat location.log | head -$i | tail -1)
+	j=1
+	p=0
+	limit=$(ls -1 | grep ^pdkt | wc -l)
+
+	while [ $p -lt $limit ] 
+	do
+		if [ $i -ne $j ]
+		then
+			if [ -f "$name1$j" ]
+			then
+			cek2=$(cat location.log | head -$j | tail -1)
+				if [ "$cek1" == "$cek2" ]
+				then
+				count=$(ls -1 ./duplicate | wc -l)
+				count=$((count + 1))
+				str2="$name2$count"
+				mv $str1 $str2
+				mv $str2 ./duplicate
+				break
+				fi
+			fi
+		fi
+		j=$((j + 1))
+		p=$((p + 1))
+	done
+
+	i=$((i + 1))
+done
+```
+#### Penjelasan
+
+Hasil download diperiksa satu per satu dengan satu sama lain untuk mendeteksi file yang sama. Semua file kecuali satu yang merupakan duplikat disimpan pada folder "duplicate" dengan nama "duplicate_NO". Pemeriksaan menggunakan location.log, file yang menyimpan lokasi URL dari log message wget.log. Tiap baris diperiksa dengan baris lainnya sesuai dengan iterasi pemeriksaan tiap file gambar.
+Dipakai gabungan command ls dan wc untuk menghitung banyak file dalam folder "duplikat" dan dengan grep untuk menghitung banyak file hasil download yang tersisa.
+
+```bash
+folderName="kenangan"
+if [ ! -d "$folderName" ]
+then
+	mkdir "$folderName"
+fi
+
+name1="pdkt_kusuma_"
+name3="kenangan_"
+
+i=0
+j=1
+limit=$(ls -1 | grep ^pdkt | wc -l)
+
+while [ $i -lt $limit ]
+do	
+	if [ -f "$name1$j" ]
+	then
+		str1="$name1$j"
+		count=$(ls -1 ./kenangan | wc -l)
+		count=$((count + 1))
+		str2="$name3$count"
+		mv $str1 $str2
+		mv $str2 ./kenangan
+
+		i=$((i + 1))
+	else
+		j=$((j + 1))
+	fi
+done
+```
+#### Penjelasan
+Setelah diperiksa file duplikat, semua file yang tersisa dipindahkan ke folder "kenangan" dengan nama "kenangan_NO".
+Dipakai gabungan command ls dan wc untuk menghitung banyak file dalam folder "kenangan" dan dengan grep untuk menghitung banyak file hasil download yang tersisa.
+
+```bash
+cat wget.log >> wget.log.bak
+```
+
+#### Penjelasan
+Log message wget di backup ke dalam file berekstensi .log.bak.
