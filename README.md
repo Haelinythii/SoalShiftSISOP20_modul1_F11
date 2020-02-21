@@ -207,7 +207,7 @@ done
 
 
 
-### b. Password acak tersebut disimpan pada file berekstensi .txt dengan nama berdasarkan argumen yang diinputkan dan HANYA berupa alphabet.
+### b. Membuat crontab setiap 8 jam dimulai dari jam 6.05 setiap hari kecuali hari Sabtu
 
 ```cron
 5 6-23/8 * * 0-5 /home/noradier/modul1/soal3/soal3.sh
@@ -217,7 +217,7 @@ Penulisan perintah untuk menjalankan file bash di crontab (sesuai ketentuan)
 * `5 6-23/8 * * 0-5 /home/noradier/modul1/soal3/soal3.sh` penulisan crontab untuk setiap 8 jam dimulai dari jam 6.05 setiap hari kecuali hari Sabtu dan menjalankan file yang ada di /home/noradier/modul1/soal3/soal3.sh
 
 
-### c. Kemudian supaya file .txt tersebut tidak mudah diketahui maka nama filenya akan di enkripsi dengan menggunakan konversi huruf (string manipulation)
+### c. buatlah sebuah script untuk mengidentifikasi gambar yang identik dari keseluruhan gambar yang terdownload tadi. Bila terindikasi sebagai gambar yang identik, maka sisakan 1 gambar dan pindahkan sisa file identik tersebut ke dalam folder ./duplicate
 
 ```bash
 folderName="duplicate"
