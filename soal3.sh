@@ -2,6 +2,18 @@
 #crontab:
 # 5 6-23/8 * * 0-5 /home/noradier/modul1/soal3/soal3.sh
 
+folderName="duplicate"
+if [ ! -d "$folderName" ]
+then
+	mkdir "$folderName"
+fi
+
+folderName="kenangan"
+if [ ! -d "$folderName" ]
+then
+	mkdir "$folderName"
+fi
+
 > location.log
 > wget.log
 i=1
