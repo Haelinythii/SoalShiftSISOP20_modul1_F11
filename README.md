@@ -1,7 +1,3 @@
-# Foobar
-
-Foobar is a Python library for dealing with word pluralization.
-
 ## Soal Nomor 1
 
 ### a. Tentukan wilayah bagian (region) mana yang memiliki keuntungan (profit) paling sedikit
@@ -129,3 +125,58 @@ Block END:
         print keysBackup[sortedProfits[p]], sortedProfits[p]
     }` untuk print 10 value profit terkecil dengan menggunakan array backup dengan index  yang merupakan value terkecil dari profit.
 * `Sample-Superstore.tsv` adalah file yang kita ambil datanya
+
+## Soal Nomor 2
+
+### a. membuat sebuah script bash yang dapat menghasilkan password secara acak sebanyak 28 karakter yang terdapat huruf besar, huruf kecil, dan angka.
+
+#### Penyelesaian:
+
+```bash
+pass=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 28 | head -n 1)
+```
+#### Penjelasan
+
+* `cat dev/urandom` digunakan untuk membuat karakter sembarang, termasuk simbol.
+* `tr -dc 'a-zA-Z0-9'` dipakai untuk mentranslasikan himpunan 1 jadi himpunan 2. Dalam kasus ini, tr dipakai untuk hanya mengeluarkan angka dan huruf dari dev/urandom.
+* `fold -w 28` digunakan untuk membatasi banyak karakter yang dihasilkan.
+* `head -n 1` digunakan untuk mengambilkan string dari baris awal sampai baris tertentu. Dalam kasus ini, head digunakan hanya untuk mengambil baris pertama hasil dev/urandom
+
+
+
+
+
+### b. Password acak tersebut disimpan pada file berekstensi .txt dengan nama berdasarkan argumen yang diinputkan dan HANYA berupa alphabet.
+
+```bash
+str=$1
+str="${str//[[:digit:]]/}"
+touch $str
+echo $pass > $str
+```
+* `str=$1` Nama file diambil dari argumen pertama.
+* `str="${str//[[:digit:]]/}"` semua digit dihilangkan dari nama file.
+* `touch $str` membuat file baru dengan nama dari variabel str
+* `echo $pass > $str` Password yang dihasilkan dicetak masuk ke dalam file sesuai dengan input argumen pertama.
+
+
+
+### c. Kemudian supaya file .txt tersebut tidak mudah diketahui maka nama filenya akan di enkripsi dengan menggunakan konversi huruf (string manipulation)
+
+```bash
+hour=$(date +"%H")
+case "$hour" in
+...
+"03")
+	str=$(echo "${str%.*}" | tr '[A-Za-z]' '[D-ZA-Cd-za-c]')
+;;
+...
+esac
+
+str="${str}.txt"
+```
+#### Penjelasan
+
+Jam digunakan sebagai acuan enkripsi nama file sesuai enkripsi Caesar Cipher.
+Misal jam 3, dibaga sebagai string "03". Karakter "a" berubah jadi "d", karakter "b" berubah jadi "e", dst.
+Ekstensi dikeluarkan dari enkripsi. Ekstensi dikembalikan ketika proses enkripsi telah selesai
