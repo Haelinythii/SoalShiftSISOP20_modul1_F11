@@ -39,7 +39,7 @@ then
 	str2=$(echo "${str1%.*}" | tr '[K-ZA-Jk-za-j]' '[A-Za-z]')
 	;;
 	"11")
-	str2=$(echo "${str1%.*}" | tr '[L-ZA-KL-za-k]' '[A-Za-z]')
+	str2=$(echo "${str1%.*}" | tr '[L-ZA-Kl-za-k]' '[A-Za-z]')
 	;;
 	"12")
 	str2=$(echo "${str1%.*}" | tr '[M-ZA-Lm-za-l]' '[A-Za-z]')
@@ -88,6 +88,7 @@ then
 else
 	hour=$(date +"%H")
 	str=$1
+	str="${str//[[:digit:]]/}"
 
 	case "$hour" in
 	"01")
