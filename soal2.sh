@@ -27,7 +27,7 @@ then
 	str2=$(echo "${str1%.*}" | tr '[G-ZA-Fg-za-f]' '[A-Za-z]')
 	;;
 	"07")
-	str2=$(echo "${str1%.*}" | tr '[H-ZA-GH-za-g]' '[A-Za-z]')
+	str2=$(echo "${str1%.*}" | tr '[H-ZA-Gh-za-g]' '[A-Za-z]')
 	;;
 	"08")
 	str2=$(echo "${str1%.*}" | tr '[I-ZA-Hi-za-h]' '[A-Za-z]')
