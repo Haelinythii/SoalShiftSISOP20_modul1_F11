@@ -214,7 +214,12 @@ fi
 ### c. Kemudian supaya file .txt tersebut tidak mudah diketahui maka nama filenya akan di enkripsi dengan menggunakan konversi huruf (string manipulation)
 
 ```bash
-hour=$(date +"%H")
+str=$1
+hour=$(stat $1 | grep -F "Modify")
+hour=${hour%:*}
+hour=${hour%:*}
+hour=${hour##* }
+
 case "$hour" in
 ...
 "03")
@@ -227,12 +232,38 @@ str="${str}.txt"
 ```
 #### Penjelasan
 
-Jam digunakan sebagai acuan enkripsi nama file sesuai enkripsi Caesar Cipher.
+Pertama program akan mengambil jam file tersebut di modifikasi terakhir menggunakan stat dan grep kata "Modify" lalu kalimat tersebut di proses hingga hanya mendapatkan jam terakhir file tersebut di modify
 Misal jam 3, dibaga sebagai string "03". Karakter "a" berubah jadi "d", karakter "b" berubah jadi "e", dst.
-Ekstensi dikeluarkan dari enkripsi. Ekstensi dikembalikan ketika proses enkripsi telah selesai
+User hanya menginputkan nama file yang ingin di enkripsi nya saja, tidak dengan ekstensinya. Ekstensi txt akan dimasukkan secara otomatis ketika proses berjalan.
 
+### d. jangan lupa untuk membuat dekripsinya supaya nama file bisa kembali.
 
+```bash
+str1=$1
+hour=$(stat $1 | grep -F "Modify")
+hour=${hour%:*}
+hour=${hour%:*}
+hour=${hour##* }
 
+case "$hour" in
+...
+"03")
+	str2=$(echo "${str1%.*}" | tr '[D-ZA-Cd-za-c]' '[A-Za-z]')
+;;
+...
+esac
+
+str2="${str2}.txt"
+mv $str1 $str2
+```
+
+#### Penjelasan
+
+Pertama program akan mengambil jam file tersebut di modifikasi terakhir menggunakan stat dan grep kata "Modify" lalu kalimat tersebut di proses hingga hanya mendapatkan jam terakhir file tersebut di modify
+Misal jam 3, dibaca sebagai string "03". Karakter akan dishift 3 karakter sebelumnya. Contoh "d" berubah jadi "a", karakter "e" berubah jadi "b", dst.
+User hanya menginputkan nama file yang ingin di dekripsi nya saja, tidak dengan ekstensinya. Ekstensi txt akan dimasukkan secara otomatis ketika proses berjalan.
+
+## Soal Nomor 3
 ### a. membuat script untuk mendownload 28 gambar dari "https://loremflickr.com/320/240/cat" menggunakan command wget dan menyimpan file dengan nama "pdkt_kusuma_NO" serta menyimpan log messages wget kedalam sebuah file "wget.log".
 #### Penyelesaian:
 
