@@ -133,14 +133,56 @@ Block END:
 #### Penyelesaian:
 
 ```bash
-pass=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 28 | head -n 1)
+i=$RANDOM
+i=$((i % 3))
+
+case $i in
+	1)
+	str="$(cat /dev/urandom | tr -dc '0-9' | fold -w 1 | head -n 1)$(cat /dev/urandom | tr -dc 'A-Z' | fold -w 1 | head -n 1)$(cat /dev/urandom | tr -dc 'a-z' | fold -w 1 | head -n 1)"
+	;;
+	2)
+	str="$(cat /dev/urandom | tr -dc 'A-Z' | fold -w 1 | head -n 1)$(cat /dev/urandom | tr -dc 'a-z' | fold -w 1 | head -n 1)$(cat /dev/urandom | tr -dc '0-9' | fold -w 1 | head -n 1)"
+	;;
+	*)
+	str="$(cat /dev/urandom | tr -dc 'a-z' | fold -w 1 | head -n 1)$(cat /dev/urandom | tr -dc '0-9' | fold -w 1 | head -n 1)$(cat /dev/urandom | tr -dc 'A-Z' | fold -w 1 | head -n 1)"
+	;;
+esac
+
+z=3
+z=$((z - 2))
+
+i=$RANDOM
+i=$((i % z))
+if [ $i -eq 0 ]
+then
+	pass="$str"
+	if [ $((z + 2)) -gt 3 ]
+	then
+	pass="$pass$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $((z - 1)) | head -n 1)"
+	fi
+elif [ $i -eq $((z - 1)) ]
+then
+	if [ $((z + 2)) -gt 3 ]
+	then
+	pass="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $((z - 1)) | head -n 1)$str"
+	else
+	pass="$str"
+	fi
+else
+	pass="$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $i | head -n 1)"
+	i=$((i + 3))
+	z=$((z + 2))
+	let j=$z-$i
+	pass="$pass$str$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w $j | head -n 1)"
+fi
 ```
 #### Penjelasan
 
 * `cat dev/urandom` digunakan untuk membuat karakter sembarang, termasuk simbol.
 * `tr -dc 'a-zA-Z0-9'` dipakai untuk mentranslasikan himpunan 1 jadi himpunan 2. Dalam kasus ini, tr dipakai untuk hanya mengeluarkan angka dan huruf dari dev/urandom.
-* `fold -w 28` digunakan untuk membatasi banyak karakter yang dihasilkan.
+* `fold` digunakan untuk membatasi banyak karakter yang dihasilkan.
 * `head -n 1` digunakan untuk mengambilkan string dari baris awal sampai baris tertentu. Dalam kasus ini, head digunakan hanya untuk mengambil baris pertama hasil dev/urandom
+* Cara kerjanya adalah pertama program akan merandom angka sebuah angka dan kemudian akan di modulo dengan 3 untuk menentukan randomnya 3 karakter pertama yang pasti memuat huruf besar, huruf kecil, dan angka. Lalu program akan merandom angka lagi dan dimodulo dengan jumlah karakter yang ingin ditampilkan dikurangi dengan karakter yang sudah di random sebelumnya. Tujuannya untuk menaruh 3 karakter pertama yang dirandom disalah satu tempat, bisa didepan, belakang atau tengah.
 
 
 
@@ -149,15 +191,23 @@ pass=$(cat /dev/urandom | tr -dc 'a-zA-Z0-9' | fold -w 28 | head -n 1)
 ### b. Password acak tersebut disimpan pada file berekstensi .txt dengan nama berdasarkan argumen yang diinputkan dan HANYA berupa alphabet.
 
 ```bash
-str=$1
-str="${str//[[:digit:]]/}"
-touch $str
-echo $pass > $str
+filename=$1
+cek1=${filename#*.}
+cek2=$(echo ${filename%.*} | tr -d [A-Za-z])
+
+if [ "$cek2" == "" ]
+then
+	if [ "$cek1" == "$1" ]
+	then
+				
+		echo $pass > "$filename.txt"
+	fi
+fi
 ```
-* `str=$1` Nama file diambil dari argumen pertama.
-* `str="${str//[[:digit:]]/}"` semua digit dihilangkan dari nama file.
-* `touch $str` membuat file baru dengan nama dari variabel str
-* `echo $pass > $str` Password yang dihasilkan dicetak masuk ke dalam file sesuai dengan input argumen pertama.
+* `filename=$1` Nama file diambil dari argumen pertama.
+* `cek1=${filename#*.}` mengambil nama file dari depan sebelum titik untuk di cek
+* `cek2=$(echo ${filename%.*} | tr -d [A-Za-z])` mengambil nama file dari belakang dan kemudian menghapus karakter yang berupa huruf sehingga jika ada simbol seperti titik,dll akan dimasukkan kedalam variabel itu
+* `echo $pass > "$filename.txt"` Password yang dihasilkan dicetak masuk ke dalam file sesuai dengan input argumen pertama dengan extensi txt.
 
 
 
@@ -307,7 +357,8 @@ Dipakai gabungan command ls dan wc untuk menghitung banyak file dalam folder "ke
 
 ```bash
 cat wget.log >> wget.log.bak
+cat location.log >> location.log.bak
 ```
 
 #### Penjelasan
-Log message wget di backup ke dalam file berekstensi .log.bak.
+Log message wget dan location di backup ke dalam file berekstensi .log.bak.
